@@ -1,6 +1,6 @@
 import clientPromise from "@/lib/mongodb";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import NextAuth from "next-auth"
+import NextAuth, { AuthOptions, SessionStrategy } from "next-auth"
 import GoogleProvider from "next-auth/providers/google";
 
 type GoogleAuthOptions = {
@@ -29,12 +29,12 @@ export const authOptions = {
     //   }
     secrete: process.env.SECRET,
     session: {
-        strategy: "jwt",
+        strategy: "jwt" as SessionStrategy,
     },
     debug: process.env.NODE_ENV === "development"
 }
 
-export default NextAuth(authOptions)
+export default NextAuth(authOptions as AuthOptions)
 
 // import NextAuth from 'next-auth'
 // import GoogleProvider from 'next-auth/providers/google'

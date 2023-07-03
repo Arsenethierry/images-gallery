@@ -4,6 +4,11 @@ import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
+interface IListItem {
+    children: React.ReactElement | string
+    navItemStyles: String
+    NavLink: string
+}
 
 const Navbar = () => {
     const [open, setOpen] = useState(false);
@@ -103,7 +108,7 @@ const Navbar = () => {
 
 export default Navbar;
 
-const ListItem = ({ children, navItemStyles, NavLink }) => {
+const ListItem = ({ children, navItemStyles, NavLink }: IListItem) => {
     return (
         <>
             <li>

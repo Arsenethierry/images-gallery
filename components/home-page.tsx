@@ -4,12 +4,18 @@ import React, { useEffect, useState } from 'react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import axios from 'axios';
 import Image from 'next/image';
+import { ImagesDataType } from '@/lib/types';
 
-function HomePage({ imagesData }) {
+
+type ImageProps = {
+    imagesData: ImagesDataType
+}
+
+function HomePage({ imagesData }: ImageProps) {
     const [query, setQuery] = useState('');
     const [searchData, setSearchData] = useState('');
-    let timeOutid;
-    const handleSearch = (value) => {
+    let timeOutid: NodeJS.Timeout;
+    const handleSearch = (value: string) => {
         if (timeOutid) {
             clearTimeout(timeOutid);
         }
@@ -32,7 +38,7 @@ function HomePage({ imagesData }) {
         }
     }, [query])
 
-    const handleDoubleClick = (event: React.ChangeEvent, itemId: string) => {
+    const handleDoubleClick = (event: React.MouseEvent, itemId: string) => {
         if(event.detail === 2) console.log(itemId, "doble cliecked")
     }
 
@@ -83,6 +89,7 @@ function HomePage({ imagesData }) {
                         width={500}
                         src={image.imgUrl}
                         alt={image.title}
+                        key={image._id}
                     />
                 )}
             </div>

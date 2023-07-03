@@ -43,12 +43,14 @@ import { getServerSession } from "next-auth"
 import { useSession, signIn, signOut, getSession } from "next-auth/react"
 import axios from 'axios'
 import HomePage from '@/components/home-page'
-import { WithAuth } from '@/lib/auth/with-auth'
 import { GetServerSidePropsContext } from 'next'
+import { ImagesDataType } from '@/lib/types'
 
-// const ProtectedHomePage = WithAuth(HomePage);
+type PageProps = {
+  data: ImagesDataType
+}
 
-export default function Home({ session, data }) {
+export default function Home({ data }: PageProps) {
   return <HomePage imagesData={data} />
   // const { data: session } = useSession()
   // if(session) {

@@ -1,14 +1,15 @@
 import clientPromise from "@/lib/mongodb";
+import { NextApiRequest, NextApiResponse } from "next";
 
 const ITEMS_PER_PAGE = 10;
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'GET') {
         try {
             const client = await clientPromise;
             const db = client.db('images');
 
-            const page = parseInt(req.query.page) || 1;
+            const page = parseInt(req.query.page as string ?? '1');
             const skip = (page - 1) * ITEMS_PER_PAGE;
             const limit = ITEMS_PER_PAGE * page;
 
@@ -23,7 +24,11 @@ export default async function handler(req, res) {
             
             res.json({ images, totalPages })
         } catch (error) {
-            throw new Error(error).message;
+            if (error instanceof Error) {
+                throw new Error(error.message);
+            } else {
+                throw new Error(error?.toString());
+            }
         }
     }
 }
