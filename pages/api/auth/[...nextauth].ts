@@ -27,7 +27,7 @@ export const authOptions = {
     //     verifyRequest: '/auth/verify-request', // (used for check email message)
     //     newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest)
     //   }
-    secrete: "febfuejfeujendiejdeodjeodeodjeodeod5767",
+    secrete: process.env.NEXTAUTH_SECRET,
     session: {
         strategy: "jwt" as SessionStrategy,
     },
