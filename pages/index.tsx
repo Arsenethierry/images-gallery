@@ -80,8 +80,8 @@ export default function Home({ data }: PageProps) {
 
 export async function getServerSideProps (context: GetServerSidePropsContext) {
   const session = await getSession(context);
-  const { data } = await axios.get(`${process.env.BASE_URL}/api/images`);
-console.log("process.env.BASE_URL: ", process.env.BASE_URL);
+  const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/images`);
+
   if (!session) {
     return {
       redirect: {
