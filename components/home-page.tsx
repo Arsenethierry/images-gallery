@@ -9,15 +9,17 @@ import { useRouter } from 'next/navigation';
 
 
 type ImageProps = {
-    imagesData: ImageType[]
+    imagesData: ImageType[],
+    totalPages: number
 }
 
-function HomePage({ imagesData }: ImageProps) {
+function HomePage({ imagesData, totalPages }: ImageProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [data, setData] = useState<SetStateAction<ImageType> | any>(imagesData);
     const [searchData, setSearchData] = useState<SetStateAction<ImageType> | any>(null);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
+    const [liked, setliked] = useState<string>('');
 
     const router = useRouter();
 
@@ -52,17 +54,15 @@ function HomePage({ imagesData }: ImageProps) {
     const getImages = useCallback(async () => {
         const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/images?page=${page}`);
         let newData = data.images
-        setData([...newData])
         if (page !== 1) {
             setData((prev: ImageType) => [...prev as typeof data, ...newData])
         } else {
             setData([...newData])
         }
-        // setTimeout(() => setLoading(false), 500)
-    }, [page])
+    }, [page, setData])
 
     useEffect(() => {
-        getImages();
+        page >= totalPages ? setLoading(false) : getImages();
     }, [page, getImages]);
 
     const handleInfiniteScroll = async () => {
@@ -81,6 +81,10 @@ function HomePage({ imagesData }: ImageProps) {
         window.addEventListener("scroll", handleInfiniteScroll);
         return () => window.removeEventListener("scroll", handleInfiniteScroll);
     }, []);
+
+    const handleLikeUnlike = (id: string) => {
+        liked === id ? setliked('') : setliked(id);
+    }
 
     return (
         <div>
@@ -124,7 +128,7 @@ function HomePage({ imagesData }: ImageProps) {
                 {searchData && searchQuery.length > 0 ? searchData.map((image: ImageType) => (
                     <Image
                         onClick={(event) => handleDoubleClick(event, image._id)}
-                        className="mb-4 cursor-grab"
+                        className="mb-4 cursor-grab transition-all duration-300 hover:opacity-10"
                         height={300}
                         width={500}
                         src={image.imgUrl}
@@ -132,17 +136,26 @@ function HomePage({ imagesData }: ImageProps) {
                         key={image._id}
                     />
                 )) : (
-                    data.map((image: ImageType) =>
-                        <Image
-                            onClick={(event) => handleDoubleClick(event, image._id)}
-                            className="mb-4 cursor-grab"
-                            height={300}
-                            width={500}
-                            src={image.imgUrl}
-                            alt={image.title}
-                            key={image._id}
-                        />
-                    )
+
+                    data.map((image: ImageType) => (
+                        <div style={{ position: 'relative' }}>
+                            <Image
+                                onClick={(event) => handleDoubleClick(event, image._id)}
+                                className="mb-4 cursor-grab rounded-sm transition-opacity duration-300 hover:opacity-75"
+                                height={300}
+                                width={500}
+                                src={image.imgUrl}
+                                alt={image.title}
+                                key={image._id}
+                            />
+                            <button
+                                type='button'
+                                onClick={() => handleLikeUnlike(image._id)}
+                                className='absolute flex justify-center items-center top-1 right-1 bg-white h-10 w-10 rounded-lg'>
+                                {liked === image._id ? <UnLikeButton className='h-10 w-10' /> : <LikeButton className='h-7 w-7' />}
+                            </button>
+                        </div>
+                    ))
                 )}
             </div>
             {loading && !searchData && (
@@ -158,8 +171,99 @@ function HomePage({ imagesData }: ImageProps) {
                     ))}
                 </div>
             )}
+            {page >= totalPages && <p className="text-gray-200 text-center my-5 text-2xl">No more Images To show</p>}
         </div>
     );
 }
 
 export default HomePage;
+
+export const LikeButton = (props: any) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        width={256}
+        height={256}
+        viewBox="0 0 256 256"
+        xmlSpace="preserve"
+        {...props}
+    >
+        <defs />
+        <g
+            style={{
+                stroke: "none",
+                strokeWidth: 0,
+                strokeDasharray: "none",
+                strokeLinecap: "butt",
+                strokeLinejoin: "miter",
+                strokeMiterlimit: 10,
+                fill: "none",
+                fillRule: "nonzero",
+                opacity: 1,
+            }}
+            transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)"
+        >
+            <path
+                d="M 45 84.334 L 6.802 46.136 C 2.416 41.75 0 35.918 0 29.716 c 0 -6.203 2.416 -12.034 6.802 -16.42 c 4.386 -4.386 10.217 -6.802 16.42 -6.802 c 6.203 0 12.034 2.416 16.42 6.802 L 45 18.654 l 5.358 -5.358 c 4.386 -4.386 10.218 -6.802 16.42 -6.802 c 6.203 0 12.034 2.416 16.42 6.802 l 0 0 l 0 0 C 87.585 17.682 90 23.513 90 29.716 c 0 6.203 -2.415 12.034 -6.802 16.42 L 45 84.334 z M 23.222 10.494 c -5.134 0 -9.961 2 -13.592 5.63 S 4 24.582 4 29.716 s 2 9.961 5.63 13.592 L 45 78.678 l 35.37 -35.37 C 84.001 39.677 86 34.85 86 29.716 s -1.999 -9.961 -5.63 -13.592 l 0 0 c -3.631 -3.63 -8.457 -5.63 -13.592 -5.63 c -5.134 0 -9.961 2 -13.592 5.63 L 45 24.311 l -8.187 -8.187 C 33.183 12.494 28.356 10.494 23.222 10.494 z"
+                style={{
+                    stroke: "none",
+                    strokeWidth: 1,
+                    strokeDasharray: "none",
+                    strokeLinecap: "butt",
+                    strokeLinejoin: "miter",
+                    strokeMiterlimit: 10,
+                    fill: "rgb(0,0,0)",
+                    fillRule: "nonzero",
+                    opacity: 1,
+                }}
+                transform=" matrix(1 0 0 1 0 0) "
+                strokeLinecap="round"
+            />
+        </g>
+    </svg>
+);
+
+const UnLikeButton = (props: any) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    xmlnsXlink="http://www.w3.org/1999/xlink"
+    width={256}
+    height={256}
+    viewBox="0 0 256 256"
+    xmlSpace="preserve"
+    {...props}
+  >
+    <defs />
+    <g
+      style={{
+        stroke: "none",
+        strokeWidth: 0,
+        strokeDasharray: "none",
+        strokeLinecap: "butt",
+        strokeLinejoin: "miter",
+        strokeMiterlimit: 10,
+        fill: "none",
+        fillRule: "nonzero",
+        opacity: 1,
+      }}
+      transform="translate(45.02412451361867 45.024124513618645) scale(1.83 1.83)"
+    >
+      <path
+        d="M 42.901 85.549 c 1.059 1.383 3.138 1.383 4.197 0 c 7.061 -9.223 28.773 -25.692 33.475 -30.82 c 12.568 -12.568 12.568 -32.946 0 -45.514 h 0 c -8.961 -8.961 -26.859 -7.239 -34.145 3.1 c -0.699 0.992 -2.158 0.992 -2.857 0 C 36.286 1.975 18.387 0.253 9.426 9.214 h 0 c -12.568 12.568 -12.568 32.946 0 45.514 C 14.128 59.857 35.84 76.325 42.901 85.549 z"
+        style={{
+          stroke: "none",
+          strokeWidth: 1,
+          strokeDasharray: "none",
+          strokeLinecap: "butt",
+          strokeLinejoin: "miter",
+          strokeMiterlimit: 10,
+          fill: "rgb(254,0,0)",
+          fillRule: "nonzero",
+          opacity: 1,
+        }}
+        transform=" matrix(1 0 0 1 0 0) "
+        strokeLinecap="round"
+      />
+    </g>
+  </svg>
+);

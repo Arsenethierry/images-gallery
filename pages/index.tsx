@@ -9,7 +9,7 @@ type PageProps = {
 }
 
 export default function Home({ data }: PageProps) {
-  return <HomePage imagesData={data.images} />
+  return <HomePage imagesData={data.images} totalPages={data.totalPages} />
 }
 
 export async function getServerSideProps (context: GetServerSidePropsContext) {
