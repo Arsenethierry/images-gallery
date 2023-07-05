@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { SetStateAction, useEffect, useState } from 'react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import axios from 'axios';
 import Image from 'next/image';
-import { ImagesDataType } from '@/lib/types';
+import { ImageType, ImagesDataType } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 
 
 type ImageProps = {
@@ -12,35 +13,70 @@ type ImageProps = {
 }
 
 function HomePage({ imagesData }: ImageProps) {
-    const [query, setQuery] = useState('');
-    const [searchData, setSearchData] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [data, setData] = useState<SetStateAction<ImagesDataType> | any>(imagesData);
+    const [loading, setLoading] = useState(false);
+    const [page, setPage] = useState(1);
+
+    const router = useRouter();
+
     let timeOutid: NodeJS.Timeout;
     const handleSearch = (value: string) => {
         if (timeOutid) {
             clearTimeout(timeOutid);
         }
         timeOutid = setTimeout(() => {
-            setQuery(value);
+            const searchParam = value;
+            setSearchQuery(searchParam);
+            router.push(`/?search=${searchParam}`);
         }, 700)
     }
 
-    const fetchImages = async () => {
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/images`);
-        if (res.status === 200) {
-            setSearchData(res.data)
+    useEffect(() => {
+        const fetchData = async () => {
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/images?search=${searchQuery}`);
+            //   setData(data);
+        };
+
+        fetchData();
+    }, [searchQuery]);
+
+    const handleDoubleClick = (event: React.MouseEvent, itemId: string) => {
+        if (event.detail === 2) console.log(itemId, "doble cliecked")
+    }
+
+    const getImages = async () => {
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/images?page=${page}`);
+        let newData = data.images
+        setData([...newData])
+        if (page !== 1) {
+            setData((prev: ImageType) => [...prev as typeof data, ...newData])
+        } else {
+            setData([...newData])
         }
-        return;
+        // setTimeout(() => setLoading(false), 500)
     }
 
     useEffect(() => {
-        if (query.length > 0) {
-            fetchImages();
-        }
-    }, [query])
+        getImages();
+    }, [page]);
 
-    const handleDoubleClick = (event: React.MouseEvent, itemId: string) => {
-        if(event.detail === 2) console.log(itemId, "doble cliecked")
+    const handleInfiniteScroll = async () => {
+        try {
+            if (window.innerHeight + window.document.documentElement.scrollTop + 1 >= window.document.documentElement.scrollHeight) {
+                setLoading(true);
+                setPage((prev) => prev + 1);
+            }
+        } catch (error) {
+            console.error(error)
+        }
     }
+
+    // add scroll event
+    useEffect(() => {
+        window.addEventListener("scroll", handleInfiniteScroll);
+        return () => window.removeEventListener("scroll", handleInfiniteScroll);
+    }, []);
 
     return (
         <div>
@@ -80,8 +116,8 @@ function HomePage({ imagesData }: ImageProps) {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-            <div className="container mt-10 columns-2 md:columns-3 lg:columns-4">
-                {imagesData.images.map((image) =>
+            <div className="container mt-10 columns-2 md:columns-3">
+                {data.map((image: ImageType) =>
                     <Image
                         onClick={(event) => handleDoubleClick(event, image._id)}
                         className="mb-4 cursor-grab"
@@ -92,7 +128,22 @@ function HomePage({ imagesData }: ImageProps) {
                         key={image._id}
                     />
                 )}
+
+
             </div>
+            {loading && (
+                <div className='container grid md:grid-cols-3 gap-3 my-5'>
+                    {[1, 2, 3].map(loader => (
+                        <div role="status" key={loader} className="w-full space-y-8 animate-pulse md:space-y-0 md:flex md:items-center">
+                            <div className="flex items-center justify-center w-full h-64 bg-gray-300 rounded">
+                                <svg className="w-10 h-10 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                    <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
+                                </svg>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
