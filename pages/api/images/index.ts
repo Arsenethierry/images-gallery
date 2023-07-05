@@ -27,18 +27,12 @@ async function getImages(req: NextApiRequest, res: NextApiResponse) {
 
         const page = parseInt(req.query.page as string ?? '1');
         const skip = (page - 1) * ITEMS_PER_PAGE;
-        // const limit = ITEMS_PER_PAGE * page;
         const limit = ITEMS_PER_PAGE;
 
         if (req.query.search && req.query.search.length > 0) {
-            const searchFilter: Filter<Document> = { category: { $in: req.query.search as string } };
-            // const options: FindOptions<Document> = { skip, limit };
-            const imagesCursor = await db.collection('images').find({ title: "lake" })
-            const images = await imagesCursor.toArray();
-            const totalImages = await db.collection('images').countDocuments(searchFilter);
-            const totalPages = Math.ceil(totalImages / ITEMS_PER_PAGE);
-
-            res.json({ images, totalPages });
+            const regex = new RegExp(req.query.search as string, 'i');
+            const images = await db.collection('images').find({ category: regex }).toArray();
+            res.json({ images });
         } else {
             const images = await db
                 .collection('images')

@@ -15,6 +15,7 @@ type ImageProps = {
 function HomePage({ imagesData }: ImageProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [data, setData] = useState<SetStateAction<ImageType> | any>(imagesData);
+    const [searchData, setSearchData] = useState<SetStateAction<ImageType> | any>(null);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
 
@@ -29,16 +30,19 @@ function HomePage({ imagesData }: ImageProps) {
             const searchParam = value;
             setSearchQuery(searchParam);
             router.push(`/?search=${searchParam}`);
-        }, 700)
+        }, 500)
     }
 
     useEffect(() => {
-        const fetchData = async () => {
-            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/images?search=${searchQuery}`);
-            //   setData(data);
-        };
+        if (searchQuery.length > 0) {
+            const fetchData = async () => {
+                await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/images?search=${searchQuery}`)
+                    .then(response => setSearchData(response.data.images));
+                // setSearchData(response.data.images);
+            };
 
-        fetchData();
+            fetchData();
+        }
     }, [searchQuery]);
 
     const handleDoubleClick = (event: React.MouseEvent, itemId: string) => {
@@ -117,7 +121,7 @@ function HomePage({ imagesData }: ImageProps) {
                 </DropdownMenu>
             </div>
             <div className="container mt-10 columns-2 md:columns-3">
-                {data.map((image: ImageType) =>
+                {searchData && searchQuery.length > 0 ? searchData.map((image: ImageType) => (
                     <Image
                         onClick={(event) => handleDoubleClick(event, image._id)}
                         className="mb-4 cursor-grab"
@@ -127,12 +131,22 @@ function HomePage({ imagesData }: ImageProps) {
                         alt={image.title}
                         key={image._id}
                     />
+                )) : (
+                    data.map((image: ImageType) =>
+                        <Image
+                            onClick={(event) => handleDoubleClick(event, image._id)}
+                            className="mb-4 cursor-grab"
+                            height={300}
+                            width={500}
+                            src={image.imgUrl}
+                            alt={image.title}
+                            key={image._id}
+                        />
+                    )
                 )}
-
-
             </div>
-            {loading && (
-                <div className='container grid md:grid-cols-3 gap-3 my-5'>
+            {loading && !searchData && (
+                <div className='container grid grid-2 md:grid-cols-3 gap-3 my-5'>
                     {[1, 2, 3].map(loader => (
                         <div role="status" key={loader} className="w-full space-y-8 animate-pulse md:space-y-0 md:flex md:items-center">
                             <div className="flex items-center justify-center w-full h-64 bg-gray-300 rounded">
