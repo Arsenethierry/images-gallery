@@ -133,8 +133,11 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
                             height={300}
                             width={500}
                             src={image.imgUrl}
+                            placeholder='blur'
+                            blurDataURL='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4+JS5ESUM8SDc9Pjv/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozv/wAARCAAFAAgDAREAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAAB//EAB4QAAICAAcAAAAAAAAAAAAAAAECAxEABAUSIoKh/8QAFQEBAQAAAAAAAAAAAAAAAAAAAQL/xAAXEQADAQAAAAAAAAAAAAAAAAAAAREy/9oADAMBAAIRAxEAPwA+hzbQ6Y8Rjjk3upDsvJLFmj1HuJWqLzD/2Q=='
                             alt={image.title}
                             key={image._id}
+                            loading='lazy'
                         />
                         <button
                             type='button'
@@ -149,12 +152,15 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
                         <div key={image._id} style={{ position: 'relative' }}>
                             <Image
                                 onClick={(event) => handleDoubleClick(event, image._id)}
-                                className="mb-4 cursor-grab rounded-sm transition-opacity duration-300 hover:opacity-75"
+                                className="mb-4 cursor-grab rounded-sm brightness-90 hover:brightness-110"
                                 height={300}
                                 width={500}
                                 src={image.imgUrl}
+                                placeholder='blur'
+                                blurDataURL='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4+JS5ESUM8SDc9Pjv/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozv/wAARCAAFAAgDAREAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAAB//EAB4QAAICAAcAAAAAAAAAAAAAAAECAxEABAUSIoKh/8QAFQEBAQAAAAAAAAAAAAAAAAAAAQL/xAAXEQADAQAAAAAAAAAAAAAAAAAAAREy/9oADAMBAAIRAxEAPwA+hzbQ6Y8Rjjk3upDsvJLFmj1HuJWqLzD/2Q=='
                                 alt={image.title}
                                 key={image._id}
+                                loading='lazy'
                             />
                             <button
                                 type='button'
