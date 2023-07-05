@@ -1,6 +1,6 @@
 "use client";
 
-import React, { SetStateAction, useEffect, useState } from 'react';
+import React, { SetStateAction, useCallback, useEffect, useState } from 'react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import axios from 'axios';
 import Image from 'next/image';
@@ -9,12 +9,12 @@ import { useRouter } from 'next/navigation';
 
 
 type ImageProps = {
-    imagesData: ImagesDataType
+    imagesData: ImageType[]
 }
 
 function HomePage({ imagesData }: ImageProps) {
     const [searchQuery, setSearchQuery] = useState('');
-    const [data, setData] = useState<SetStateAction<ImagesDataType> | any>(imagesData);
+    const [data, setData] = useState<SetStateAction<ImageType> | any>(imagesData);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
 
@@ -45,7 +45,7 @@ function HomePage({ imagesData }: ImageProps) {
         if (event.detail === 2) console.log(itemId, "doble cliecked")
     }
 
-    const getImages = async () => {
+    const getImages = useCallback(async () => {
         const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/images?page=${page}`);
         let newData = data.images
         setData([...newData])
@@ -55,11 +55,11 @@ function HomePage({ imagesData }: ImageProps) {
             setData([...newData])
         }
         // setTimeout(() => setLoading(false), 500)
-    }
+    }, [page])
 
     useEffect(() => {
         getImages();
-    }, [page]);
+    }, [page, getImages]);
 
     const handleInfiniteScroll = async () => {
         try {
