@@ -63,7 +63,7 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
 
     useEffect(() => {
         page >= totalPages ? setLoading(false) : getImages();
-    }, [page, getImages]);
+    }, [page, getImages, totalPages]);
 
     const handleInfiniteScroll = async () => {
         try {
@@ -126,19 +126,27 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
             </div>
             <div className="container mt-10 columns-2 md:columns-3">
                 {searchData && searchQuery.length > 0 ? searchData.map((image: ImageType) => (
-                    <Image
-                        onClick={(event) => handleDoubleClick(event, image._id)}
-                        className="mb-4 cursor-grab transition-all duration-300 hover:opacity-10"
-                        height={300}
-                        width={500}
-                        src={image.imgUrl}
-                        alt={image.title}
-                        key={image._id}
-                    />
+                    <div key={image._id} style={{ position: 'relative' }}>
+                        <Image
+                            onClick={(event) => handleDoubleClick(event, image._id)}
+                            className="mb-4 cursor-grab rounded-sm transition-opacity duration-300 hover:opacity-75"
+                            height={300}
+                            width={500}
+                            src={image.imgUrl}
+                            alt={image.title}
+                            key={image._id}
+                        />
+                        <button
+                            type='button'
+                            onClick={() => handleLikeUnlike(image._id)}
+                            className='absolute flex justify-center items-center top-1 right-1 bg-white h-10 w-10 rounded-lg'>
+                            {liked === image._id ? <UnLikeButton className='h-10 w-10' /> : <LikeButton className='h-7 w-7' />}
+                        </button>
+                    </div>
                 )) : (
 
                     data.map((image: ImageType) => (
-                        <div style={{ position: 'relative' }}>
+                        <div key={image._id} style={{ position: 'relative' }}>
                             <Image
                                 onClick={(event) => handleDoubleClick(event, image._id)}
                                 className="mb-4 cursor-grab rounded-sm transition-opacity duration-300 hover:opacity-75"
@@ -224,46 +232,46 @@ export const LikeButton = (props: any) => (
 );
 
 const UnLikeButton = (props: any) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    xmlnsXlink="http://www.w3.org/1999/xlink"
-    width={256}
-    height={256}
-    viewBox="0 0 256 256"
-    xmlSpace="preserve"
-    {...props}
-  >
-    <defs />
-    <g
-      style={{
-        stroke: "none",
-        strokeWidth: 0,
-        strokeDasharray: "none",
-        strokeLinecap: "butt",
-        strokeLinejoin: "miter",
-        strokeMiterlimit: 10,
-        fill: "none",
-        fillRule: "nonzero",
-        opacity: 1,
-      }}
-      transform="translate(45.02412451361867 45.024124513618645) scale(1.83 1.83)"
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        width={256}
+        height={256}
+        viewBox="0 0 256 256"
+        xmlSpace="preserve"
+        {...props}
     >
-      <path
-        d="M 42.901 85.549 c 1.059 1.383 3.138 1.383 4.197 0 c 7.061 -9.223 28.773 -25.692 33.475 -30.82 c 12.568 -12.568 12.568 -32.946 0 -45.514 h 0 c -8.961 -8.961 -26.859 -7.239 -34.145 3.1 c -0.699 0.992 -2.158 0.992 -2.857 0 C 36.286 1.975 18.387 0.253 9.426 9.214 h 0 c -12.568 12.568 -12.568 32.946 0 45.514 C 14.128 59.857 35.84 76.325 42.901 85.549 z"
-        style={{
-          stroke: "none",
-          strokeWidth: 1,
-          strokeDasharray: "none",
-          strokeLinecap: "butt",
-          strokeLinejoin: "miter",
-          strokeMiterlimit: 10,
-          fill: "rgb(254,0,0)",
-          fillRule: "nonzero",
-          opacity: 1,
-        }}
-        transform=" matrix(1 0 0 1 0 0) "
-        strokeLinecap="round"
-      />
-    </g>
-  </svg>
+        <defs />
+        <g
+            style={{
+                stroke: "none",
+                strokeWidth: 0,
+                strokeDasharray: "none",
+                strokeLinecap: "butt",
+                strokeLinejoin: "miter",
+                strokeMiterlimit: 10,
+                fill: "none",
+                fillRule: "nonzero",
+                opacity: 1,
+            }}
+            transform="translate(45.02412451361867 45.024124513618645) scale(1.83 1.83)"
+        >
+            <path
+                d="M 42.901 85.549 c 1.059 1.383 3.138 1.383 4.197 0 c 7.061 -9.223 28.773 -25.692 33.475 -30.82 c 12.568 -12.568 12.568 -32.946 0 -45.514 h 0 c -8.961 -8.961 -26.859 -7.239 -34.145 3.1 c -0.699 0.992 -2.158 0.992 -2.857 0 C 36.286 1.975 18.387 0.253 9.426 9.214 h 0 c -12.568 12.568 -12.568 32.946 0 45.514 C 14.128 59.857 35.84 76.325 42.901 85.549 z"
+                style={{
+                    stroke: "none",
+                    strokeWidth: 1,
+                    strokeDasharray: "none",
+                    strokeLinecap: "butt",
+                    strokeLinejoin: "miter",
+                    strokeMiterlimit: 10,
+                    fill: "rgb(254,0,0)",
+                    fillRule: "nonzero",
+                    opacity: 1,
+                }}
+                transform=" matrix(1 0 0 1 0 0) "
+                strokeLinecap="round"
+            />
+        </g>
+    </svg>
 );
