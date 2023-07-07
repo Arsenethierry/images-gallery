@@ -6,6 +6,7 @@ export interface ImageType {
     description?: string;
     likedBy: string[];
     category: string;
+    likeCount: number;
 }
 
 export interface ImagesDataType {

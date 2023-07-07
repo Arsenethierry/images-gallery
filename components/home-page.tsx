@@ -117,7 +117,7 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
     }, []);
 
     const handleLikeUnlike = (image: ImageType) => {
-        if(image) {
+        if (image) {
             isLiked(image) ? unlikeImage(image._id) : likeImage(image._id)
         }
         return;
@@ -170,7 +170,7 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
                     <div key={image._id} style={{ position: 'relative' }}>
                         <Image
                             onClick={(event) => handleDoubleClick(event, image)}
-                            className="mb-4 cursor-grab rounded-sm transition-opacity duration-300 hover:opacity-75"
+                            className="mb-4 cursor-grab rounded-sm brightness-75 hover:brightness-110"
                             height={300}
                             width={500}
                             src={image.imgUrl}
@@ -186,7 +186,8 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
                             className='absolute flex justify-center items-center top-1 right-1 bg-white h-10 w-10 rounded-lg'>
                             {isLiked(image) ? <UnLikeButton className='h-10 w-10' /> : <LikeButton className='h-7 w-7' />}
                         </button>
-                        <h2 className='absolute left-1 bottom-1 text-xl text-white font-bold'>{toCapitalize(image.category)}</h2>
+                        <h2 className='absolute left-1 bottom-1 text-xl bg-slate-700 rounded-md px-3 py-1 text-white font-bold'>{toCapitalize(image.category)}</h2>
+                        <h5 className='absolute right-1 bottom-1 text-md text-black bg-slate-400 px-4 rounded-b font-bold'>{'likes: '}{image.likeCount}</h5>
                     </div>
                 )) : (
 
@@ -194,7 +195,7 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
                         <div key={image._id} style={{ position: 'relative' }}>
                             <Image
                                 onClick={(event) => handleDoubleClick(event, image)}
-                                className="mb-4 cursor-grab rounded-sm brightness-90 hover:brightness-110"
+                                className="mb-4 cursor-grab rounded-sm brightness-75 hover:brightness-110"
                                 height={300}
                                 width={500}
                                 src={image.imgUrl}
@@ -210,7 +211,8 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
                                 className='absolute flex justify-center items-center top-1 right-1 bg-white h-10 w-10 rounded-lg'>
                                 {isLiked(image) ? <UnLikeButton className='h-10 w-10' /> : <LikeButton className='h-7 w-7' />}
                             </button>
-                            <h2 className='absolute left-1 bottom-1 text-xl text-white font-bold'>{toCapitalize(image.category)}</h2>
+                            <h2 className='absolute left-1 bottom-1 text-xl bg-slate-700 rounded-md px-3 py-1 text-white font-bold'>{toCapitalize(image.category)}</h2>
+                            <h5 className='absolute right-1 bottom-1 text-md text-black bg-slate-400 px-4 rounded-b font-bold'>{'likes: '}{image.likeCount}</h5>
                         </div>
                     ))
                 )}
