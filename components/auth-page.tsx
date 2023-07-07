@@ -76,7 +76,7 @@ function AuthPage({ isNewUser }: pageProps) {
                         <div className='pb-8'>
                             <h1 className='text-white text-center font-bold text-2xl md:text-3xl xl:text-5xl'>{isNewUser ? 'Register' : 'Login'}</h1>
                         </div>
-                        {isNewUser && (
+                        {/* {isNewUser && (
                             <FormField
                                 control={form.control}
                                 name='name'
@@ -146,7 +146,7 @@ function AuthPage({ isNewUser }: pageProps) {
                             <hr className='w-full border border-[#4B4A4A]' />
                             <span className='text-zinc-500'>OR</span>
                             <hr className='w-full border border-[#4B4A4A]' />
-                        </div>
+                        </div> */}
                         <Button
                             onClick={() => signIn('google')}
                             variant='outline'
@@ -155,9 +155,9 @@ function AuthPage({ isNewUser }: pageProps) {
                             <Image src={'/google-icon.png'} width={25} height={25} alt='sign in with google' />
                             Continue with Google
                         </Button>
-                        <h2 className='text-white text-base text-right'>
+                        {/* <h2 className='text-white text-base text-right'>
                             {isNewUser ? "have account?" : "Don't have account?"} <span onClick={handleAuthSwitch} className='text-[#6366F1] cursor-pointer'>{isNewUser ? 'Login' : 'Register'}</span>
-                        </h2>
+                        </h2> */}
                     </form>
                 </Form>
             </div>

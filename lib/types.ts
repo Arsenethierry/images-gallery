@@ -4,6 +4,8 @@ export interface ImageType {
     title: string;
     tags: string[];
     description?: string;
+    likedBy: string[];
+    category: string;
 }
 
 export interface ImagesDataType {

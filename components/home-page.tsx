@@ -1,16 +1,24 @@
 "use client";
 
 import React, { SetStateAction, useCallback, useEffect, useState } from 'react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from './ui/dropdown-menu';
 import axios from 'axios';
 import Image from 'next/image';
 import { ImageType, ImagesDataType } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 
 type ImageProps = {
     imagesData: ImageType[],
-    totalPages: number
+    totalPages: number,
 }
 
 function HomePage({ imagesData, totalPages }: ImageProps) {
@@ -21,6 +29,7 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
     const [page, setPage] = useState(1);
     const [liked, setliked] = useState<string>('');
 
+    const { data: session } = useSession();
     const router = useRouter();
 
     let timeOutid: NodeJS.Timeout;
@@ -40,15 +49,40 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
             const fetchData = async () => {
                 await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/images?search=${searchQuery}`)
                     .then(response => setSearchData(response.data.images));
-                // setSearchData(response.data.images);
             };
 
             fetchData();
         }
     }, [searchQuery]);
 
-    const handleDoubleClick = (event: React.MouseEvent, itemId: string) => {
-        if (event.detail === 2) console.log(itemId, "doble cliecked")
+    const isLiked = (image: ImageType) => {
+        if (liked === image._id || image.likedBy.includes(session?.user?.email as string)) return true;
+        return false;
+    }
+
+    const handleDoubleClick = (event: React.MouseEvent, image: ImageType) => {
+        if (event.detail === 2) {
+            isLiked(image) ? unlikeImage(image._id) : likeImage(image._id)
+        }
+        return;
+    }
+
+    const likeImage = async (id: string) => {
+        if (session?.user?.email) {
+            await axios.put(`${process.env.NEXT_PUBLIC_BASE_URL}/api/images/${id}/user/${session?.user?.email}`)
+                .then(response => response.status === 201 ? setliked(id) : setliked(''))
+        } else {
+            alert("not signed in")
+        }
+    }
+
+    const unlikeImage = async (id: string) => {
+        if (session?.user?.email) {
+            await axios.put(`${process.env.NEXT_PUBLIC_BASE_URL}/api/images/${id}/user/${session?.user?.email}/unlike`)
+                .then(response => response.status === 201 ? setliked('') : setliked(''))
+        } else {
+            alert("not signed in")
+        }
     }
 
     const getImages = useCallback(async () => {
@@ -82,9 +116,16 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
         return () => window.removeEventListener("scroll", handleInfiniteScroll);
     }, []);
 
-    const handleLikeUnlike = (id: string) => {
-        liked === id ? setliked('') : setliked(id);
+    const handleLikeUnlike = (image: ImageType) => {
+        if(image) {
+            isLiked(image) ? unlikeImage(image._id) : likeImage(image._id)
+        }
+        return;
     }
+
+    const toCapitalize = (str: string) => {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    };
 
     return (
         <div>
@@ -103,7 +144,7 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
                             onChange={(e) => handleSearch(e.target.value)}
                             id="images-search"
                             className="bg-[#1D2432] border border-gray-500 text-gray-300 text-sm rounded-lg block w-full pl-10 p-2.5"
-                            placeholder="Search" required />
+                            placeholder="Search. For Ex: animals" required />
                     </div>
                 </form>
 
@@ -128,7 +169,7 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
                 {searchData && searchQuery.length > 0 ? searchData.map((image: ImageType) => (
                     <div key={image._id} style={{ position: 'relative' }}>
                         <Image
-                            onClick={(event) => handleDoubleClick(event, image._id)}
+                            onClick={(event) => handleDoubleClick(event, image)}
                             className="mb-4 cursor-grab rounded-sm transition-opacity duration-300 hover:opacity-75"
                             height={300}
                             width={500}
@@ -141,17 +182,18 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
                         />
                         <button
                             type='button'
-                            onClick={() => handleLikeUnlike(image._id)}
+                            onClick={() => handleLikeUnlike(image)}
                             className='absolute flex justify-center items-center top-1 right-1 bg-white h-10 w-10 rounded-lg'>
-                            {liked === image._id ? <UnLikeButton className='h-10 w-10' /> : <LikeButton className='h-7 w-7' />}
+                            {isLiked(image) ? <UnLikeButton className='h-10 w-10' /> : <LikeButton className='h-7 w-7' />}
                         </button>
+                        <h2 className='absolute left-1 bottom-1 text-xl text-white font-bold'>{toCapitalize(image.category)}</h2>
                     </div>
                 )) : (
 
                     data.map((image: ImageType) => (
                         <div key={image._id} style={{ position: 'relative' }}>
                             <Image
-                                onClick={(event) => handleDoubleClick(event, image._id)}
+                                onClick={(event) => handleDoubleClick(event, image)}
                                 className="mb-4 cursor-grab rounded-sm brightness-90 hover:brightness-110"
                                 height={300}
                                 width={500}
@@ -164,10 +206,11 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
                             />
                             <button
                                 type='button'
-                                onClick={() => handleLikeUnlike(image._id)}
+                                onClick={() => handleLikeUnlike(image)}
                                 className='absolute flex justify-center items-center top-1 right-1 bg-white h-10 w-10 rounded-lg'>
-                                {liked === image._id ? <UnLikeButton className='h-10 w-10' /> : <LikeButton className='h-7 w-7' />}
+                                {isLiked(image) ? <UnLikeButton className='h-10 w-10' /> : <LikeButton className='h-7 w-7' />}
                             </button>
+                            <h2 className='absolute left-1 bottom-1 text-xl text-white font-bold'>{toCapitalize(image.category)}</h2>
                         </div>
                     ))
                 )}

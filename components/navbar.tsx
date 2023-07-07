@@ -91,12 +91,20 @@ const Navbar = () => {
                                     </Link>
                                 </>
                             ) : (
+                                <>
+                                <h2 className="text-white flex items-center px-5">
+                                    {session?.user?.image && (
+                                        <img src={session.user.image} className="h-9 rounded-full mr-2" loading="lazy" />
+                                    )}
+                                {session.user?.name}
+                                </h2>
                                 <button
                                     onClick={() => signOut()}
                                     className="py-3 text-base font-medium text-white rounded-lg bg-primary px-7 hover:bg-opacity-90"
                                 >
                                     Log Out
                                 </button>
+                                </>
                             )}
                         </div>
                     </div>
