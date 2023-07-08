@@ -1,14 +1,6 @@
 "use client";
 
 import React, { SetStateAction, useCallback, useEffect, useState } from 'react';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from './ui/dropdown-menu';
 import axios from 'axios';
 import Image from 'next/image';
 import { ImageType, ImagesDataType } from '@/lib/types';
@@ -151,7 +143,7 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
             </div>
             <div className='container pb-1 mt-32 flex justify-between border-b-2 border-gray-500'>
                 <h2 className='text-center text-white text-[34px] font-bold capitalize'>trending Photos</h2>
-                <DropdownMenu>
+                {/* <DropdownMenu>
                     <DropdownMenuTrigger className="bg-[#D9D9D9] text-gray-800 hover:text-gray-300 hover:bg-gray-800 focus:outline-none font-medium rounded-lg text-sm px-5 text-center inline-flex items-center">
                         Fielter Images
                     </DropdownMenuTrigger>
@@ -163,7 +155,7 @@ function HomePage({ imagesData, totalPages }: ImageProps) {
                         <DropdownMenuItem>Team</DropdownMenuItem>
                         <DropdownMenuItem>Subscription</DropdownMenuItem>
                     </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu> */}
             </div>
             <div className="container mt-10 columns-2 md:columns-3">
                 {searchData && searchQuery.length > 0 ? searchData.map((image: ImageType) => (
