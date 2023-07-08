@@ -46,9 +46,9 @@ const Navbar = () => {
                                 <ul className="block lg:flex">
                                     <ListItem
                                         navItemStyles="text-white"
-                                        NavLink="/"
+                                        NavLink="https://arsenethierry-dev.vercel.app/"
                                     >
-                                        Home
+                                        Portfolio
                                     </ListItem>
                                     <ListItem
                                         navItemStyles="text-white"
@@ -92,18 +92,18 @@ const Navbar = () => {
                                 </>
                             ) : (
                                 <>
-                                <h2 className="text-white flex items-center px-5">
-                                    {session?.user?.image && (
-                                        <img src={session.user.image} className="h-9 rounded-full mr-2" loading="lazy" />
-                                    )}
-                                {session.user?.name}
-                                </h2>
-                                <button
-                                    onClick={() => signOut()}
-                                    className="py-3 text-base font-medium text-white rounded-lg bg-primary px-7 hover:bg-opacity-90"
-                                >
-                                    Log Out
-                                </button>
+                                    <h2 className="text-white flex items-center px-5">
+                                        {session?.user?.image && (
+                                            <img src={session.user.image} className="h-9 rounded-full mr-2" loading="lazy" />
+                                        )}
+                                        {session.user?.name}
+                                    </h2>
+                                    <button
+                                        onClick={() => signOut()}
+                                        className="py-3 text-base font-medium text-white rounded-lg bg-primary px-7 hover:bg-opacity-90"
+                                    >
+                                        Log Out
+                                    </button>
                                 </>
                             )}
                         </div>
@@ -120,10 +120,7 @@ const ListItem = ({ children, navItemStyles, NavLink }: IListItem) => {
     return (
         <>
             <li>
-                <a
-                    href={NavLink}
-                    className={`flex py-2 text-base font-medium lg:ml-12 lg:inline-flex ${navItemStyles}`}
-                >
+                <a href={NavLink} className={`flex py-2 text-base border-slate-700 font-medium lg:ml-12 lg:inline-flex ${navItemStyles}`}>
                     {children}
                 </a>
             </li>
